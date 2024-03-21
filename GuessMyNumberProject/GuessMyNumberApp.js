@@ -1,4 +1,9 @@
-import { ImageBackground, SafeAreaView, StyleSheet } from "react-native";
+import {
+  ImageBackground,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from "expo-font";
 import { hideAsync, preventAutoHideAsync } from "expo-splash-screen";
@@ -7,6 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 import GameScreen from "./screens/GameScreen";
 import Colors from "./constants/colors";
 import GameOverScreen from "./screens/GameOverScreen";
+import { StatusBar } from "expo-status-bar";
 
 const GuessMyNumber = () => {
   const [guessRounds, setGuessRounds] = useState(0);
@@ -31,7 +37,7 @@ const GuessMyNumber = () => {
   const gameOverHandler = (numberOfRounds) => {
     setGuessRounds(numberOfRounds);
     setIsGameOver(true);
-  }
+  };
 
   const screen = useMemo(() => {
     if (isGameOver) {
@@ -64,19 +70,22 @@ const GuessMyNumber = () => {
   }
 
   return (
-    <LinearGradient
-      colors={[Colors.primary600, Colors.accent500]}
-      style={styles.rootScreen}
-    >
-      <ImageBackground
-        imageStyle={styles.image}
-        resizeMode="cover"
-        source={require("./assets/images/background.png")}
+    <>
+      <StatusBar style="light" />
+      <LinearGradient
+        colors={[Colors.primary600, Colors.accent500]}
         style={styles.rootScreen}
       >
-        <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
-      </ImageBackground>
-    </LinearGradient>
+        <ImageBackground
+          imageStyle={styles.image}
+          resizeMode="cover"
+          source={require("./assets/images/background.png")}
+          style={styles.rootScreen}
+        >
+          <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
+        </ImageBackground>
+      </LinearGradient>
+    </>
   );
 };
 

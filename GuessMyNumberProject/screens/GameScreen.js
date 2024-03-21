@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { Alert, FlatList, StyleSheet, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import Card from "../components/ui/Card";
-import InstructionText from "../components/ui/InstructionText";
-import NumberContainer from "../components/game/NumberContainer";
-import PrimaryButton from "../components/ui/PrimaryButton";
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import Title from "../components/ui/Title";
 import GuessLogItems from "../components/game/GuessLogItem";
+import GameScreenContent from "../components/game/GameScreenContent";
+import Sizes from "../constants/sizes";
 
 const generateRandom = (min, max, exclude) => {
   const rndNum = Math.floor(Math.random() * (max - min)) + min;
@@ -22,6 +25,8 @@ const GameScreen = ({ onGameOver, userNumber }) => {
   const [guessRounds, setGuessRounds] = useState([initialGuess]);
   const roundsLength = guessRounds.length;
 
+  const { height } = useWindowDimensions();
+
   useEffect(() => {
     if (currentGuess === userNumber) {
       onGameOver(roundsLength);
@@ -35,7 +40,7 @@ const GameScreen = ({ onGameOver, userNumber }) => {
       (direction === "lower" && currentGuess < userNumber) ||
       (direction === "greater" && currentGuess > userNumber)
     ) {
-      Alert.alert("Don't lie", "You know is wrong", [
+      Alert.alert("Don't lie", "You know this is wrong...", [
         { text: "Ok", style: "cancel" },
       ]);
       return;
@@ -49,28 +54,14 @@ const GameScreen = ({ onGameOver, userNumber }) => {
     setCurrentGuess(newRndNumber);
     setGuessRounds((prevGuessRounds) => [newRndNumber, ...prevGuessRounds]);
   };
-
+  const paddingTop = height > Sizes.medium ? "20%" : "5%";
   return (
-    <View style={styles.gameScreen}>
+    <View style={[styles.gameScreen, { paddingTop }]}>
       <Title>Opponent&#39;s Guess</Title>
-      <NumberContainer>{currentGuess}</NumberContainer>
-      <Card>
-        <InstructionText style={styles.instructionText}>
-          Higher or lower?
-        </InstructionText>
-        <View style={styles.buttonsContainer}>
-          <View style={styles.button}>
-            <PrimaryButton onPress={nextGuessHandler("lower")}>
-              <Ionicons name="remove" size={24} />
-            </PrimaryButton>
-          </View>
-          <View style={styles.button}>
-            <PrimaryButton onPress={nextGuessHandler("greater")}>
-              <Ionicons name="add" size={24} />
-            </PrimaryButton>
-          </View>
-        </View>
-      </Card>
+      <GameScreenContent
+        currentGuess={currentGuess}
+        onNextGuess={nextGuessHandler}
+      />
       <View style={styles.listContainer}>
         <FlatList
           data={guessRounds}
@@ -86,17 +77,10 @@ const GameScreen = ({ onGameOver, userNumber }) => {
 
 const styles = StyleSheet.create({
   gameScreen: {
+    alignItems: "center",
     flex: 1,
-    padding: 24,
-  },
-  instructionText: {
-    marginBottom: 12,
-  },
-  buttonsContainer: {
-    flexDirection: "row",
-  },
-  button: {
-    flex: 1,
+    padding: 8,
+    // paddingTop: "20%",
   },
   listContainer: {
     flex: 1,
